@@ -4,6 +4,14 @@ class Planet:
         self.name = name
         self.description = description
         self.num_moons = num_moons
+    
+    def to_dict(self):
+        return dict(
+            id = self.id,
+            name = self.name,
+            description = self.description,
+            num_moons = self.num_moons,
+            )     
 
 planets = [
     Planet(1, "Mercury", "the closest to the Sun", 0),
@@ -16,3 +24,4 @@ planets = [
     Planet(8, "Neptune", "dark and cold", 16)
 
 ]        
+
