@@ -41,6 +41,35 @@ def get_all_planets():
         )
     return planets_response
 
+@planets_bp.get("/<planet_id>")
+def get_one_planet(planet_id):
+    planet = validate_planet(planet_id)
+
+    return {
+        "id": planet.id,
+        "name": planet.name,
+        "description": planet.description,
+        "num_moon": planet.num_moons,
+    }
+
+def validate_planet(planet_id):
+    try:
+        planet_id =int(planet_id)
+    except:
+        response = {"message": f"Planet {planet_id} invalid."} 
+        abort(make_response(response, 400))
+
+    query = db.select(Planet).where(Planet.id==planet_id)
+    planet = db.session.scalar(query)
+
+    if not planet:
+        response = {"message": f"Planet {planet_id} not found."}
+        abort(make_response(response, 404))
+
+    return planet
+
+
+
 # @planets_bp.get("")
 # def get_all_planets():
 #     results_list = []
