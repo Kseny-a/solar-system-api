@@ -64,6 +64,13 @@ def update_planet(planet_id):
 
     return Response(status=204, mimetype="application/json")
 
+@planets_bp.delete("/<planet_id>")
+def delete_planet(planet_id):
+    planet = validate_planet(planet_id)
+    db.session.delete(planet)
+    db.session.commit()
+
+    return Response(status=204, mimetype="application/json")
 
 def validate_planet(planet_id):
     try:
