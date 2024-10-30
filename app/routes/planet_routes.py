@@ -29,14 +29,14 @@ def get_all_planets():
     query = db.select(Planet).order_by(Planet.id)
     planets = db.session.scalars(query)
 
-    planets_response = [] # should we update with to a dictionary to follow json?
+    planets_response = [] 
     for planet in planets:
         planets_response.append(
             {
                 "id": planet.id,
                 "name": planet.name,
                 "description": planet.description,
-                "num_moon": planet.num_moons # change to num_moons for consistency? 
+                "num_moons": planet.num_moons 
                 }
         )
     return planets_response
@@ -49,7 +49,7 @@ def get_one_planet(planet_id):
         "id": planet.id,
         "name": planet.name,
         "description": planet.description,
-        "num_moon": planet.num_moons, # change to num_moons for consistency? 
+        "num_moons": planet.num_moons, 
     }
 
 @planets_bp.put("/<planet_id>")
