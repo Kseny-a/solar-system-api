@@ -1,4 +1,4 @@
-from flask import Blueprint, abort, make_response, request
+from flask import Blueprint, abort, make_response, request, Response
 from app.models.planet import Planet
 from ..db import db
 
@@ -29,14 +29,14 @@ def get_all_planets():
     query = db.select(Planet).order_by(Planet.id)
     planets = db.session.scalars(query)
 
-    planets_response = []
+    planets_response = [] # should we update with to a dictionary to follow json?
     for planet in planets:
         planets_response.append(
             {
                 "id": planet.id,
                 "name": planet.name,
                 "description": planet.description,
-                "num_moon": planet.num_moons
+                "num_moon": planet.num_moons # change to num_moons for consistency? 
                 }
         )
     return planets_response
@@ -49,8 +49,21 @@ def get_one_planet(planet_id):
         "id": planet.id,
         "name": planet.name,
         "description": planet.description,
-        "num_moon": planet.num_moons,
+        "num_moon": planet.num_moons, # change to num_moons for consistency? 
     }
+
+@planets_bp.put("/<planet_id>")
+def update_planet(planet_id):
+    planet = validate_planet(planet_id)
+    request_body = request.get_json()
+
+    planet.name = request_body["name"]
+    planet.description = request_body["description"]
+    planet.num_moons = request_body["num_moons"]
+    db.session.commit()
+
+    return Response(status=204, mimetype="application/json")
+
 
 def validate_planet(planet_id):
     try:
