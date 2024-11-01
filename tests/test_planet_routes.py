@@ -1,3 +1,4 @@
+# from app.routes.planet_routes import planet_id
 def test_get_all_planets_with_no_records(client):
     # Act
     response = client.get("/planets")
@@ -21,6 +22,15 @@ def test_get_one_planet_succeeds(client, two_saved_planets):
         "description": "first planet",
         "num_moons": 0
     }
+
+def test_get_one_planet_fails_return_404(client):
+    # Act
+    response = client.get("/planets/1")
+    response_body = response.get_json()
+
+    # Assert
+    assert response.status_code == 404
+    assert response_body == {"message": f"Planet 1 not found."}
 
 def test_create_one_planet_in_empty_db(client):
     response = client.post("/planets", json={
