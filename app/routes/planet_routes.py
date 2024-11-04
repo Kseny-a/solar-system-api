@@ -7,20 +7,22 @@ planets_bp = Blueprint("planets_bp", __name__, url_prefix="/planets")
 @planets_bp.post("")
 def create_planet():
     request_body = request.get_json()
-    name = request_body["name"]
-    description = request_body["description"]
-    num_moons = request_body["num_moons"]
-    
-    new_planet = Planet(name=name, description=description, num_moons=num_moons)
+
+    # name = request_body["name"]
+    # description = request_body["description"]
+    # num_moons = request_body["num_moons"]
+    try:
+        new_planet = Planet.from_dict(request_body)
+    except KeyError as e:
+        response = {"message": f"Invalid request: missing {e.args[0]}"}
+        abort(make_response(response,400))
+
+    # new_planet = Planet(name=name, description=description, num_moons=num_moons)
     db.session.add(new_planet)
     db.session.commit()
 
-    response = {
-        "id": new_planet.id,
-        "name": new_planet.name,
-        "description": new_planet.description,
-        "num_moons": new_planet.num_moons
-    }
+    response = new_planet.to_dict()
+
     return response, 201 
 
 
@@ -41,29 +43,32 @@ def get_all_planets():
 
     query = query.order_by(Planet.id)
     planets = db.session.scalars(query)
+    planets_response = [planet.to_dict() for planet in planets]
+
     
-    planets_response = [] 
-    for planet in planets:
-        planets_response.append(
-            {
-                "id": planet.id,
-                "name": planet.name,
-                "description": planet.description,
-                "num_moons": planet.num_moons 
-                }
-        )
+    # planets_response = [] 
+    # for planet in planets:
+    #     planets_response.append(
+    #         {
+    #             "id": planet.id,
+    #             "name": planet.name,
+    #              "description": planet.description,
+    #             "num_moons": planet.num_moons 
+    #              }
+    #     )
     return planets_response
 
 @planets_bp.get("/<planet_id>")
 def get_one_planet(planet_id):
     planet = validate_planet(planet_id)
 
-    return {
-        "id": planet.id,
-        "name": planet.name,
-        "description": planet.description,
-        "num_moons": planet.num_moons, 
-    }
+    return planet.to_dict()
+# {
+#         "id": planet.id,
+#         "name": planet.name,
+#         "description": planet.description,
+#         "num_moons": planet.num_moons, 
+#     }
 
 @planets_bp.put("/<planet_id>")
 def update_planet(planet_id):

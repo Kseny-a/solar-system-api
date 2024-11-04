@@ -14,13 +14,20 @@ class Planet(db.Model):
 #         self.description = description
 #         self.num_moons = num_moons
     
-#     def to_dict(self):
-#         return dict(
-#             id = self.id,
-#             name = self.name,
-#             description = self.description,
-#             num_moons = self.num_moons,
-#             )     
+    def to_dict(self):
+        return dict(
+            id = self.id,
+            name = self.name,
+            description = self.description,
+            num_moons = self.num_moons,
+            )     
+    @classmethod
+    def from_dict(cls,planet_data):
+        return cls(
+            name=planet_data["name"],
+            description=planet_data["description"],
+            num_moons=planet_data["num_moons"]
+        )
 
 # planets = [
 #     Planet(1, "Mercury", "the closest to the Sun", 0),
